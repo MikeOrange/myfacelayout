@@ -76,6 +76,9 @@ def put_hat_on_beckham(source_image):
             mustacheWidth = x2 - x1
             mustacheHeight = y2 - y1
 
+            print "W", mustacheWidth
+            print "H", mustacheHeight
+
             #import ipdb; ipdb.set_trace()
 
             # Re-size the original image and the masks to the mustache sizes
@@ -103,6 +106,7 @@ def put_hat_on_beckham(source_image):
             # place the joined image, saved to dst back over the original image
             roi_color[y1:y2, x1:x2] = dst
 
+        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
         cv2.imshow('img', img)
         #cv2.imwrite("result.jpg", img)
         cv2.waitKey(0)
@@ -110,4 +114,5 @@ def put_hat_on_beckham(source_image):
 
 
 if __name__ == '__main__':
-     put_hat_on_beckham("larger_image.jpg")
+     #put_hat_on_beckham("larger_image.jpg")
+     put_hat_on_beckham("maburro.png")
