@@ -3,7 +3,7 @@ from faceoverlay import ChristmasPromo, CookPromo, FashionPromo, HairdresserProm
 
 if __name__ == '__main__':
      #my_image = ChristmasPromo("ninho.jpg")
-     my_image = HairdresserPromo("yomesmo.jpg")
+     my_image = HairdresserPromo("backgrounds/yomesmo.jpg")
      my_image.put_hat()
      my_image.put_scissors()
      my_image.put_message()
