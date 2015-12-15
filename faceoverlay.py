@@ -112,7 +112,7 @@ class BackgroundImage(object):
 
     @property
     def faces(self):
-        if not self._faces:
+        if len(self._faces) == 0:
             self._detect_faces()
         return self._faces
 
@@ -122,11 +122,11 @@ class BackgroundImage(object):
     def put_image_over_background(self, image, directives):
         for (x, y, w, h) in self.faces:
             face = (x, y, w, h)
-            x1, x2, y1, y2 = directives(image, face)
+            x1, x2, y1, y2 = directives(image, face,
+                                        self.width,
+                                        self.height)
             elemWidth = x2-x1
             elemHeight = y2-y1
-
-            import ipdb; ipdb.set_trace()
 
             img, mask, mask_inv = image.get_resized(elemWidth, elemHeight)
 
@@ -144,19 +144,17 @@ class BackgroundImage(object):
 
             if x2 > self.width:
                 x2 = self.width
-                img = img[:, :x2]
-                mask = mask[:, :x2]
-                mask_inv = mask_inv[:, :x2]
+                img = img[:, :x2-x1]
+                mask = mask[:, :x2-x1]
+                mask_inv = mask_inv[:, :x2-x1]
 
             if y2 > self.height:
                 y2 = self.height
-                img = img[:y2, :]
-                mask = mask[:y2, :]
-                mask_inv = mask_inv[:y2, :]
+                img = img[:y2-y1, :]
+                mask = mask[:y2-y1, :]
+                mask_inv = mask_inv[:y2-y1, :]
 
             roi = self.img[y1:y2, x1:x2]
-
-
 
             regionHeight = y2 - y1
             regionWidth = x2 - x1
@@ -175,8 +173,6 @@ class BackgroundImage(object):
 
             # place the joined image, saved to dst back over the original image
             self.img[y1:y2, x1:x2] = dst
-
-
 
 
 class PromotionalPicture(object):
@@ -204,6 +200,22 @@ class PromotionalPicture(object):
     def _set_used_files(self):
         pass
 
+    def put_message(self):
+        def directive(used_image, face, background_width, background_height):
+
+            newWidth = int(background_width*7/8)
+            newHeight = newWidth * used_image.height / used_image.width
+
+            x1 = background_width - newWidth
+            x2 = x1 + newWidth
+            y1 = background_height - \
+                 newHeight - int(background_height*0.05)
+            y2 = y1 + newHeight
+
+            return x1, x2, y1, y2
+
+        self.background.put_image_over_background(self.message_img, directive)
+
 
 
 class ChristmasPromo(PromotionalPicture):
@@ -227,7 +239,7 @@ class ChristmasPromo(PromotionalPicture):
                                 message_img_file)
 
     def put_hat(self):
-        def directive(used_image, face):
+        def directive(used_image, face, background_width, background_height):
             x, y, w, h = face
 
             newWidth = int(3*w/4)
@@ -243,228 +255,147 @@ class ChristmasPromo(PromotionalPicture):
         self.background.put_image_over_background(self.main_outfit, directive)
 
 
-class PromoPicture(object):
-    """
-    Promotion picture including background image, profession overlay
-    (hat, tool) and some text message on the front
-    """
-    def __init__(self, face_file):
-        self.face_file = face_file
-        self._set_used_files()
-        self.face_img = self.read_image(self.face_file)
-        self.main_outfit_img = None
-        self.secondary_img = None
-        self.message_img = None
-        self.final_img = None
+class CookPromo(PromotionalPicture):
+    def __init__(self, background_file):
+        super(CookPromo, self).__init__(background_file)
 
     def _set_used_files(self):
-        self.main_outfit_file = None
-        self.secondary_img_file = None
-        self.message_img_file = None
-
-    def show_original_image(self):
-        cv2.imshow('img', self.face_img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
-
-    @staticmethod
-    def read_image(filename, both=None):
-        if not both:
-            img = cv2.imread(filename, cv2.CV_LOAD_IMAGE_COLOR)
-            if img == None:
-                raise IOError("Background file not found")
-            return img
-        else:
-            img = cv2.imread(filename, -1)
-            imgBGR = cv2.imread(filename, 1)
-            if img == None:
-                raise IOError("Background file not found")
-            return (img, imgBGR)
-
-    def _put_image_on_location(self, x, y):
-        pass
-
-    def _resize_image(self, height, width):
-        pass
-
-    def _detect_faces(self):
-        """
-        Returns a list of the detected faces in tuples
-        containing (x, y, width and height) within the image
-        :return:
-        """
-        def detect(gray, cascade):
-            rects = cascade.detectMultiScale(
-                gray, scaleFactor=1.1, minNeighbors=3,
-                minSize=(10, 10), flags = cv.CV_HAAR_SCALE_IMAGE)
-            return rects
-
-        cascade = cv2.CascadeClassifier(FACE_CASCADE_FILE)
-        gray = cv2.cvtColor(self.face_img, cv.CV_BGR2GRAY)
-
-        return detect(gray, cascade)
-
-    def _detect_nose(self):
-        pass
-
-    def save_final_image(self, destination_file):
-        pass
-
-
-class ChristmasImage(PromoPicture):
-    def __init__(self, face_file):
-        super(ChristmasImage, self).__init__(face_file)
-
-    def _set_used_files(self):
-        self.main_outfit_file = environ.get(
+        main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/christmas_hat.png"
+            "images/sombrero_chef.png"
         )
-        self.secondary_img_file = environ.get(
-            "FACEOVERLAY_SNOW_EFFECT"
+        secondary_img_file = environ.get(
+            "FACEOVERLAY_SNOW_EFFECT",
+            "images/mustache2.png"
         )
-        self.message_img_file = environ.get(
+        message_img_file = environ.get(
             "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/navidad.png"
+            "images/disposicion.png"
         )
+        self._set_used_elements(main_outfit_file,
+                                secondary_img_file,
+                                message_img_file)
 
-    def get_complete_image(self):
-        hat, hatBGR = self.read_image(self.main_outfit_file, both=True)
-        self.main_outfit_img = hat
+    def put_hat(self):
+        def directive(used_image, face, background_width, background_height):
+            x, y, w, h = face
 
-        hat_gray = cv2.cvtColor(hat, cv2.COLOR_BGR2GRAY)
-        ret, orig_mask = cv2.threshold(hat_gray, 10, 255, cv2.THRESH_BINARY)
-        orig_mask_inv = cv2.bitwise_not(orig_mask)
+            newWidth = int(w)
+            newHeight = newWidth * used_image.height / used_image.width
 
-        origHatHeight, origHatWidth = hatBGR.shape[:2]
-        totalImgHeight, totalImgWidth = self.face_img.shape[:2]
+            x1 = x - w/7
+            x2 = x1 + newWidth
+            y1 = y - newHeight + y/8
+            y2 = y1 + newHeight
 
-        rects = self._detect_faces()
+            return (x1, x2, y1, y2)
 
-        for (x, y, w, h) in rects:
-            hatWidth = int(3*w/4)
-            hatHeight = hatWidth * origHatHeight / origHatWidth
-
-            x1 = x + w/4
-            x2 = x1 + hatWidth
-            y1 = y - hatHeight/2
-            y2 = y1 + hatHeight
-
-            hatWidth = x2 - x1
-            hatHeight = y2 - y1
-
-            newHat = cv2.resize(hatBGR, (hatWidth, hatHeight), interpolation=cv2.INTER_AREA)
-            mask = cv2.resize(orig_mask, (hatWidth, hatHeight), interpolation=cv2.INTER_AREA)
-            mask_inv = cv2.resize(orig_mask_inv, (hatWidth, hatHeight), interpolation=cv2.INTER_AREA)
-
-            # Cutting image if necessary
-            if x1 < 0:
-                newHat = newHat[:, -x1:]
-                mask = mask[:, -x1:]
-                mask_inv = mask_inv[:, -x1:]
-                x1 = 0
-            if y1 < 0:
-                newHat = newHat[-y1:, :]
-                mask = mask[-y1:, :]
-                mask_inv = mask_inv[-y1:, :]
-                y1 = 0
-
-            if x2 > totalImgWidth:
-                x2 = totalImgWidth
-                newHat = newHat[:, :x2]
-                mask = mask[:, :x2]
-                mask_inv = mask_inv[:, :x2]
-
-            if y2 > totalImgHeight:
-                y2 = totalImgHeight
-                newHat = newHat[:y2, :]
-                mask = mask[:y2, :]
-                mask_inv = mask_inv[:y2, :]
-
-            # take ROI for mustache from background equal to size of mustache image
-            roi = self.face_img[y1:y2, x1:x2]
-
-            regionHeight = y2 - y1
-            regionWidth = x2 - x1
-
-            # roi_bg contains the original image only where the mustache is not
-            # in the region that is the size of the mustache.
-            roi_bg = np.zeros((regionHeight, regionWidth, 3), dtype=np.uint8)
-            cv2.bitwise_and(roi, roi, dst=roi_bg, mask=mask_inv)
-
-            roi_fg = np.zeros((regionHeight, regionWidth, 3), dtype=np.uint8)
-            # roi_fg contains the image of the mustache only where the mustache is
-            cv2.bitwise_and(newHat, newHat, dst=roi_fg, mask=mask)
-            #cv2.imwrite("result.png", hatBGR)
-
-            # join the roi_bg and roi_fg
-            dst = cv2.add(roi_bg, roi_fg)
-
-            # place the joined image, saved to dst back over the original image
-            self.face_img[y1:y2, x1:x2] = dst
-
-        return self.final_img
+        self.background.put_image_over_background(self.main_outfit, directive)
 
 
-class StylistImage(PromoPicture):
-    def __init__(self, face_file):
-        super(self.__class__).__init__(face_file)
+class FashionPromo(PromotionalPicture):
+    def __init__(self, background_file):
+        super(FashionPromo, self).__init__(background_file)
 
     def _set_used_files(self):
-        self.main_outfit_file = environ.get(
+        main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/christmas_hat.png"
+            "images/cintametrica2.png"
         )
-        self.secondary_img_file = environ.get(
-            "FACEOVERLAY_SNOW_EFFECT"
+        secondary_img_file = environ.get(
+            "FACEOVERLAY_SNOW_EFFECT",
+            "images/tijeras.png"
         )
-        self.message_img_file = environ.get(
+        message_img_file = environ.get(
             "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/navidad.png"
+            "images/idea.png"
         )
+        self._set_used_elements(main_outfit_file,
+                                secondary_img_file,
+                                message_img_file)
 
-    def get_complete_image(self):
-        return self.final_img
+    def put_hat(self):
+        def directive(used_image, face, background_width, background_height):
+            x, y, w, h = face
+
+            newWidth = w*2
+            newHeight = newWidth * used_image.height / used_image.width
+
+            x1 = x - newWidth/7
+            x2 = x1 + newWidth
+            y1 = y + h
+            y2 = y1 + newHeight
+
+            return (x1, x2, y1, y2)
+
+        self.background.put_image_over_background(self.main_outfit, directive)
+
+    def put_scissors(self):
+        def directive(used_image, face, background_width, background_height):
+            x, y, w, h = face
+
+            newWidth = w*2/3
+            newHeight = newWidth * used_image.height / used_image.width
+
+            x1 = x + w
+            x2 = x1 + newWidth
+            y1 = y + h/2
+            y2 = y1 + newHeight
+
+            return (x1, x2, y1, y2)
+
+        self.background.put_image_over_background(self.secondary_img, directive)
 
 
-class DesignerImage(PromoPicture):
-    def __init__(self, face_file):
-        super(self.__class__).__init__(face_file)
+class HairdresserPromo(PromotionalPicture):
+    def __init__(self, background_file):
+        super(HairdresserPromo, self).__init__(background_file)
 
     def _set_used_files(self):
-        self.main_outfit_file = environ.get(
+        main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/christmas_hat.png"
+            "images/secador.png"
         )
-        self.secondary_img_file = environ.get(
-            "FACEOVERLAY_SNOW_EFFECT"
+        secondary_img_file = environ.get(
+            "FACEOVERLAY_SNOW_EFFECT",
+            "images/tijeras.png"
         )
-        self.message_img_file = environ.get(
+        message_img_file = environ.get(
             "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/navidad.png"
+            "images/disposicion.png"
         )
+        self._set_used_elements(main_outfit_file,
+                                secondary_img_file,
+                                message_img_file)
 
+    def put_hat(self):
+        def directive(used_image, face, background_width, background_height):
+            x, y, w, h = face
 
-    def get_complete_image(self):
-        return self.final_img
+            newWidth = w
+            newHeight = newWidth * used_image.height / used_image.width
 
+            x1 = x - newWidth/7
+            x2 = x1 + newWidth
+            y1 = y + h
+            y2 = y1 + newHeight
 
-class ChefImage(PromoPicture):
-    def __init__(self, face_file):
-        super(self.__class__).__init__(face_file)
+            return (x1, x2, y1, y2)
 
-    def _set_used_files(self):
-        self.main_outfit_file = environ.get(
-            "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/christmas_hat.png"
-        )
-        self.secondary_img_file = environ.get(
-            "FACEOVERLAY_SNOW_EFFECT"
-        )
-        self.message_img_file = environ.get(
-            "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/navidad.png"
-        )
+        self.background.put_image_over_background(self.main_outfit, directive)
 
-    def get_complete_image(self):
-        return self.final_img
+    def put_scissors(self):
+        def directive(used_image, face, background_width, background_height):
+            x, y, w, h = face
+
+            newWidth = w*2/3
+            newHeight = newWidth * used_image.height / used_image.width
+
+            x1 = x + w
+            x2 = x1 + newWidth
+            y1 = y + h/2
+            y2 = y1 + newHeight
+
+            return (x1, x2, y1, y2)
+
+        self.background.put_image_over_background(self.secondary_img, directive)
