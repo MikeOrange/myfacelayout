@@ -470,3 +470,18 @@ footer .footer-below {
     color: #18bc9c;
     background-color: #E7E7E7;
 }
+
+.foto-icon{
+    width: 20%;
+    height: auto;
+}
+
+form{
+    margin-left: 25%;
+    margin-right:25%;
+    width: 100%;
+}
+
+#profession{
+    width: 50%;
+}
