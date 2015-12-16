@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask import Flask, url_for, render_template, redirect, send_from_directory
 from flask.ext.wtf import Form
 from wtforms import SelectField, FileField
@@ -18,7 +21,10 @@ class FileUploadForm(Form):
     profession = SelectField('Profesion',
                              validators=[DataRequired()],
                              choices=[('', 'Selecciona un tema'),
-                                      ('1', 'Cocinero')])
+                                      ('1', 'Cocina'),
+                                      ('2', u'Diseño'),
+                                      ('3', u'Estilista'),
+                                      ('4', u'¡Feliz Navidad!')])
     image = FileField(u'Image File', [DataRequired()])
 
 
