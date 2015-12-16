@@ -476,6 +476,12 @@ footer .footer-below {
     height: auto;
 }
 
+.foto-foto{
+    width: 60%;
+    height: auto;
+}
+
+
 form{
     margin-left: 25%;
     margin-right:25%;
@@ -484,4 +490,10 @@ form{
 
 #profession{
     width: 50%;
+}
+
+#subidor {
+    background-color: white;
+    color: #626262;
+    margin-left: 20%;
 }

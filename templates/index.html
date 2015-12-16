@@ -45,7 +45,7 @@
                     <span class="icon-bar"></span>
                 </button>
 
-                <a class="navbar-brand" style="padding-top: 0px;" href="#page-top"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
+                <a class="navbar-brand" style="padding-top: 0px;" href="/"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo"></a>
 
             </div>
 
@@ -71,20 +71,29 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
-                    <img class="img-responsive foto-icon" src="{{ url_for('static', filename='img/camera.png') }}" alt="">
+                    {% if not picture %}
+                        <img class="img-responsive foto-icon" src="{{ url_for('static', filename='img/camera.png') }}" alt="camara">
+                    {% else %}
+                        <img class="img-responsive foto-foto" src="{{ url_for('uploaded_file', filename=picture) }}" alt="">
+                    {% endif %}
+
+                    {% if not picture %}
                     <div id="fileform">
                         <form method="post" enctype="multipart/form-data">
                             {{ form.hidden_tag() }}
                             {{ form.profession(class='form-control') }}
                             {{ form.image }}
                             <br>
-                            <input class="btn btn-default" type="submit" value="Subir">
+                            <div style="text-align:left">
+                                <input id="subidor" class="btn btn-default" type="submit" value="Subir">
+                            </div>
                         </form>
                     </div>
+                    {% endif %}
                     <div class="intro-text">
                         <span class="name">¡Crece con Bellbank!</span>
                         <hr class="star-light">
-                        <span class="skills">Haz click en la cámara y sube tu foto para visualizarte con el sueño de tu preferencia</span>
+                        <span class="skills">Sube tu foto para visualizarte con el sueño de tu preferencia</span>
                     </div>
                 </div>
             </div>

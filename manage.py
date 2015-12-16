@@ -17,7 +17,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 class FileUploadForm(Form):
     profession = SelectField('Profesion',
                              validators=[DataRequired()],
-                             choices=[('', 'Seleccione'),
+                             choices=[('', 'Selecciona un tema'),
                                       ('1', 'Cocinero')])
     image = FileField(u'Image File', [DataRequired()])
 
@@ -34,14 +34,19 @@ def picture():
     if form.validate_on_submit() and allowed_file(form.image.data.filename):
         filename = secure_filename(form.image.data.filename)
         form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        return redirect(url_for('picture'))
-    print form.errors
-    return render_template('index.html', form=form)
+        return redirect(url_for('specific_picture', filename=filename))
+
+    return render_template('index.html', form=form, picture=None)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
+
+@app.route('/picture/<filename>')
+def specific_picture(filename):
+    form = FileUploadForm()
+    return render_template('index.html', form=form, picture=filename)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
