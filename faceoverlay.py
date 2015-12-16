@@ -174,6 +174,9 @@ class BackgroundImage(object):
             # place the joined image, saved to dst back over the original image
             self.img[y1:y2, x1:x2] = dst
 
+    def save_image(self):
+        cv2.imwrite(self.filename, self.img)
+
 
 class PromotionalPicture(object):
     def __init__(self, background_file):
