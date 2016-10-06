@@ -234,8 +234,8 @@ class ChristmasPromo(PromotionalPicture):
             "FACEOVERLAY_SNOW_EFFECT", ""
         )
         message_img_file = environ.get(
-            "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/navidad.png"
+            "FACEOVERLAY_CHRISTMAS_MESSAGE",
+            "images/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -272,8 +272,8 @@ class CookPromo(PromotionalPicture):
             "images/mustache2.png"
         )
         message_img_file = environ.get(
-            "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/disposicion.png"
+            "FACEOVERLAY_CHRISTMAS_MESSAGE",
+            "images/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -310,8 +310,8 @@ class FashionPromo(PromotionalPicture):
             "images/tijeras.png"
         )
         message_img_file = environ.get(
-            "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/idea.png"
+            "FACEOVERLAY_CHRISTMAS_MESSAGE",
+            "images/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -364,8 +364,8 @@ class HairdresserPromo(PromotionalPicture):
             "images/tijeras.png"
         )
         message_img_file = environ.get(
-            "FACEOVERLAY_CHRISMAS_MESSAGE",
-            "images/disposicion.png"
+            "FACEOVERLAY_CHRISTMAS_MESSAGE",
+            "images/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,

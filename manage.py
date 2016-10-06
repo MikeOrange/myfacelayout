@@ -19,11 +19,11 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
-THEME_CHOICES = [('', 'Selecciona un tema'),
-                 ('1', 'Cocina'),
-                 ('2', 'Modas'),
-                 ('3', 'Estilista'),
-                 ('4', 'Feliz Navidad')]
+THEME_CHOICES = [('', 'Select a filter'),
+                 ('1', 'Cook'),
+                 ('2', 'Fashion'),
+                 ('3', 'Stylist'),
+                 ('4', 'Merry Christmas')]
 
 
 @app.context_processor
@@ -58,13 +58,13 @@ def overlay_picture(pre_filename, promo):
     filename = 'uploads/' + pre_filename
     my_image = None
 
-    if promo == 'Cocina':
+    if promo == 'Cook':
         my_image = CookPromo(filename)
-    elif promo == 'Modas':
+    elif promo == 'Fashion':
         my_image = FashionPromo(filename)
-    elif promo == 'Estilista':
+    elif promo == 'Stylist':
         my_image = HairdresserPromo(filename)
-    elif promo == 'Feliz Navidad':
+    elif promo == 'Merry Christmas':
         my_image = ChristmasPromo(filename)
     else:
         return None
@@ -87,15 +87,18 @@ def picture():
 
     return render_template('index.html', form=form, picture=None)
 
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
+
 @app.route('/picture/<filename>')
 def specific_picture(filename):
     form = FileUploadForm()
     return render_template('index.html', form=form, picture=filename)
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
