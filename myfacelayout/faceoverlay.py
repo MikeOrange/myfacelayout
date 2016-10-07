@@ -230,14 +230,14 @@ class ChristmasPromo(PromotionalPicture):
     def _set_used_files(self):
         main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/christmas_hat.png"
+            "res/christmas_hat.png"
         )
         secondary_img_file = environ.get(
             "FACEOVERLAY_SNOW_EFFECT", ""
         )
         message_img_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_MESSAGE",
-            "images/label.png"
+            "res/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -267,15 +267,15 @@ class CookPromo(PromotionalPicture):
     def _set_used_files(self):
         main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/sombrero_chef.png"
+            "res/sombrero_chef.png"
         )
         secondary_img_file = environ.get(
             "FACEOVERLAY_SNOW_EFFECT",
-            "images/mustache2.png"
+            "res/mustache2.png"
         )
         message_img_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_MESSAGE",
-            "images/label.png"
+            "res/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -305,15 +305,15 @@ class FashionPromo(PromotionalPicture):
     def _set_used_files(self):
         main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/cintametrica2.png"
+            "res/cintametrica2.png"
         )
         secondary_img_file = environ.get(
             "FACEOVERLAY_SNOW_EFFECT",
-            "images/tijeras.png"
+            "res/tijeras.png"
         )
         message_img_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_MESSAGE",
-            "images/label.png"
+            "res/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
@@ -359,15 +359,15 @@ class HairdresserPromo(PromotionalPicture):
     def _set_used_files(self):
         main_outfit_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_HAT",
-            "images/secador.png"
+            "res/secador.png"
         )
         secondary_img_file = environ.get(
             "FACEOVERLAY_SNOW_EFFECT",
-            "images/tijeras.png"
+            "res/tijeras.png"
         )
         message_img_file = environ.get(
             "FACEOVERLAY_CHRISTMAS_MESSAGE",
-            "images/label.png"
+            "res/label.png"
         )
         self._set_used_elements(main_outfit_file,
                                 secondary_img_file,
