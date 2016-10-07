@@ -6,6 +6,8 @@ import cv2.cv as cv
 import numpy as np
 from os import environ
 
+# heavily influenced by http://sublimerobots.com/2015/02/dancing-mustaches/
+
 FACE_CASCADE_FILE = environ.get(
     "FACE_CASCADE_FILE",
     "/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml")
