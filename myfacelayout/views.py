@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
-import string, random
+import string
+import random
 from flask import url_for, render_template, redirect, send_from_directory
 from myfacelayout import app
 from myfacelayout.faceoverlay import (ChristmasPromo, CookPromo, FashionPromo,
@@ -18,6 +19,11 @@ def override_url_for():
 
 
 def dated_url_for(endpoint, **values):
+    """
+    Using the url cache buster snippet on http://flask.pocoo.org/snippets/40/
+    ensures that the images uploaded are always shown up to date adding
+    a last modified query parameter
+    """
     if endpoint == 'uploaded_file':
         filename = values.get('filename', None)
         if filename:
@@ -61,6 +67,12 @@ def is_file_allowed(checked_file):
 
 
 def overlay_picture(filename, promo):
+    """
+    Uses the faceoverlay c
+    :param filename:
+    :param promo:
+    :return:
+    """
     my_image = None
 
     if promo == 'Cook':
@@ -90,6 +102,9 @@ def random_filename(extension):
 
 @app.route('/', methods=['GET', 'POST'])
 def picture():
+    """
+    Returns the main page template, lets user upload picture to be masked
+    """
     form = FileUploadForm()
     if form.validate_on_submit() and is_file_allowed(form.image.data):
         filename = random_filename(extract_file_extension(form.image.data.filename))
@@ -104,11 +119,17 @@ def picture():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
+    """
+    Returns the uploaded masked picture
+    """
     return send_from_directory(app.config['UPLOAD_FOLDER'],
                                filename)
 
 
 @app.route('/picture/<filename>')
 def specific_picture(filename):
+    """
+    Returns the index page showing an uploaded picture masked
+    """
     form = FileUploadForm()
     return render_template('index.html', form=form, picture=filename)
