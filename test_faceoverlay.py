@@ -1,4 +1,4 @@
-from faceoverlay import ChristmasPromo, CookPromo, FashionPromo, HairdresserPromo
+from myfacelayout.faceoverlay import HairdresserPromo
 
 
 if __name__ == '__main__':
